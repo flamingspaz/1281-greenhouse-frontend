@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Thing</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" href="http://css-spinners.com/css/spinner/timer.css" type="text/css">
+  <script src="main.js"></script>
+</head>
+<body>
+  <div id="containerdiv">
+    <div id="initialloader">
+      <div class="timer-loader">Loading...</div><span>   Getting data...</span>
+    </div>
+    <div id="maindiv">
+      <p>Temperature: <span id="temp"></span> &deg;C</p>
+      <p>Humidity: <span id="humid"></span> RH</p>
+      <p>Humidifier is <span id="humidifier"></span></p>
+      <p>Windows are <span id='windowState'></span></p>
+
+      <input type='checkbox' id="overridebox" onclick="toggleOverride()">  Manual override</input><br />
+      <div id="override">
+        <button class='btn' onClick="openWindow()">Open Window</button>
+        <button class='btn' onClick="closeWindow()">Close Window</button></div>
+      </div>
+  </div>
+</body>
+</html>

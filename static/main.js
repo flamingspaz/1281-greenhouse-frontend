@@ -3,10 +3,31 @@ function reqListener() {
   sensorData = JSON.parse(this.responseText);
   var windowStr;
   var humidStr;
-  console.log(sensorData.temp);
+
+
   if (sensorData.windowState === 1) {
     windowStr = "open";
+    if (!("Notification" in window)) {
+      console.log("This browser does not support desktop notification");
+    }
+
+    // Let's check whether notification permissions have already been granted
+    else if (Notification.permission === "granted") {
+      // If it's okay let's create a notification
+      var notification = new Notification("Temperature threshold triggered");
+    }
+
+    // Otherwise, we need to ask the user for permission
+    else if (Notification.permission !== 'denied') {
+      Notification.requestPermission(function (permission) {
+        // If the user accepts, let's create a notification
+        if (permission === "granted") {
+          var notification = new Notification("Temperature threshold triggered");
+        }
+      });
+    }
   }
+
   else {
     windowStr = "closed";
   }
@@ -17,7 +38,8 @@ function reqListener() {
   else {
     humidStr = "on";
   }
-  //document.body.innerHTML = "<div id=\"containerdiv\"><p>Temperature: " + sensorData.temp + "&deg;C</p><p>Humidity: " + sensorData.humidity + " RH</p><p>Humidifier is " + humidStr + "</p><p>Windows are <span id='windowState'>" + windowStr + "</span></p><input type='checkbox'>Manual override</input><button class='btn' onClick=\"openWindow()\">Open Window</button></div>";
+
+  // Add the loaded values into the document
   document.getElementById('temp').innerHTML = sensorData.temp;
   document.getElementById('humid').innerHTML = sensorData.humidity;
   document.getElementById('humidifier').innerHTML = humidStr;
@@ -25,14 +47,16 @@ function reqListener() {
   document.getElementById('initialloader').style.display = "none";
   document.getElementById('maindiv').style.display = "block";
   if (sensorData.overrideState === 1) {
-    document.getElementById('override').style.display = "block";
+    document.getElementById('override').style.display = "block"; // If the controller is already overridden show the box
   }
-  document.getElementById('overridebox').disabled = false;
+  document.getElementById('overridebox').disabled = false; // else don't
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  // After the initial load grab the data from serial
     doXHR();
   setInterval(function() {
+    // and keep doing it every 7 seconds
       doXHR();
   }, 7000);
 
@@ -59,6 +83,7 @@ function reqListener2() {
   else {
     document.getElementById("windowState").innerHTML = "closed";
   }
+  // After requesting a open/closeWindow, change the DOM
 }
 
 function doXHR() {

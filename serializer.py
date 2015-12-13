@@ -2,6 +2,7 @@ import serial
 import web
 import json
 
+# Define the URLs the Web server will respond to, and the classes that will run when that URL is accessed
 urls = (
   '/api/getdata.json', 'getData',
   '/api/openWindow', 'openWindow',
@@ -9,12 +10,18 @@ urls = (
   '/api/setOverride', 'setOverride',
   '/api/rmOverride', 'rmOverride'
 )
+
+# Set up our serial connection and close it due to weirdness with leaving it open.
+# On Windows the device will be COM1, on Linux it is /dev/ttyUSB0
+# Set our timeout to 3
 serial = serial.Serial("/dev/ttyUSB0", 9600, timeout=3)
 serial.close()
+
+
 class getData:
     def GET(self):
-        web.header('Content-Type', 'application/json')
-        return json.dumps(serializeFromSerial())
+        web.header('Content-Type', 'application/json') # Return the code as JSON so the browser can use it
+        return json.dumps(serializeFromSerial()) # Parse the raw json
 class openWindow:
     def GET(self):
         serial.open()
@@ -42,12 +49,11 @@ class rmOverride:
 
 def serializeFromSerial():
  serial.open()
- data = serial.readline()
+ data = serial.readline() # Read the next line from serial
  serial.close()
- print(data)
-#data = '{"temp":26,"humidity":30,"windowState":"open"}' # load in some dummy data for now
- j = json.loads(data)
- return j
+ print(data) # Print the data to terminal for debugging purposes
+ j = json.loads(data) # Load the raw string as JSON
+ return j # Return the JSON
 
 if __name__ == "__main__":
     app = web.application(urls, globals())
